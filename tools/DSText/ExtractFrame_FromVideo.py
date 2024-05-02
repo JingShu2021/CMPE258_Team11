@@ -13,9 +13,9 @@ def get_file_path_list(json_dir, postfix = [".jpg"] ):
     else:
         print ("Do not exist")
     for rt, dirs, files in os.walk(json_dir):
-#         print(rt,dirs)
-#         if len(dirs)>0:
-#             continue
+        print(rt,dirs,files)
+        if len(dirs)>0:
+            continue
         for file in files:
             if os.path.splitext(file)[1] in postfix:
                 file_path_list.append( os.path.join(rt, file ) )
@@ -31,7 +31,7 @@ def extract_frame_from_video(video_path, video_frame_save_dir ):
     Parent_dir, Video_name = os.path.split(video_path)
     VideoName_prefix, VideoName_postfix = os.path.splitext(Video_name)
 
-    
+    print("extracting frames ....")
     video_object = cv2.VideoCapture(video_path)
     fps = video_object.get(cv2.CAP_PROP_FPS)
 
@@ -67,7 +67,8 @@ def batch_extractFrame_fromVideo(VideoSet_dir="",to_video=""):
         NewVideoFrame_dir = os.path.join(Parent_dir_new, Video_prefix )
         if not os.path.exists(NewVideoFrame_dir):
             os.makedirs(NewVideoFrame_dir )
-
+        print("Video_dir: ", Video_dir)
+        print("NewVideoFrame_dir: ", NewVideoFrame_dir)
         extract_frame_from_video(Video_dir, NewVideoFrame_dir)
 
                 
@@ -76,15 +77,15 @@ if __name__ == "__main__":
     print ("Hello World!")
     VideoSetDir_list = []
     
-    video_root = "./video/"
-    output_frame_root = "./frame/"
+    video_root = "/data/cmpe258-sp24/jingshu/Data/Dataset/DSText/DSText_video"#"./video/"
+    output_frame_root = "/data/cmpe258-sp24/jingshu/Data/Dataset/DSText/images/train/"#"./frame/"
     for i in os.listdir(video_root):
         if ".ipynb" in i:
             continue
         from_video = os.path.join(video_root,i)
         VideoSetDir_list.append(from_video)
 
-
+    print(len(VideoSetDir_list))
     for VideoSet_dir in VideoSetDir_list:
         print(VideoSet_dir)
         to_video = os.path.join(output_frame_root,VideoSet_dir.split("/")[-1])

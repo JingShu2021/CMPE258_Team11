@@ -34,7 +34,7 @@ from engine import evaluate, train_one_epoch, train_one_epoch_mot
 from models import build_model
 import os
 # os.environ["CUDA_VISIBLE_DEVICES"] = "6"
-
+os.environ['TORCH_HOME'] = '/data/cmpe258-sp24/jingshu/torchhome/'
 def get_args_parser():
     parser = argparse.ArgumentParser('Deformable DETR Detector', add_help=False)
     parser.add_argument('--lr', default=2e-4, type=float)
@@ -92,7 +92,7 @@ def get_args_parser():
                         help="Dropout applied in the transformer")
     parser.add_argument('--nheads', default=8, type=int,
                         help="Number of attention heads inside the transformer's attentions")
-    parser.add_argument('--num_queries', default=200, type=int,
+    parser.add_argument('--num_queries', default=100, type=int, # default=200
                         help="Number of query slots")
     parser.add_argument('--dec_n_points', default=4, type=int)
     parser.add_argument('--enc_n_points', default=4, type=int)
@@ -140,7 +140,8 @@ def get_args_parser():
     parser.add_argument('--dataset_file', default='coco')
     parser.add_argument('--gt_file_train', type=str)
     parser.add_argument('--gt_file_val', type=str)
-    parser.add_argument('--coco_path', default='/data/workspace/detectron2/datasets/coco/', type=str)
+    # parser.add_argument('--coco_path', default='/data/workspace/detectron2/datasets/coco/', type=str)
+    parser.add_argument('--coco_path', default='/data/cmpe258-sp24/jingshu/Data/Dataset/COCOTextV2/', type=str)
     parser.add_argument('--coco_panoptic_path', type=str)
     parser.add_argument('--remove_difficult', action='store_true')
 
@@ -155,12 +156,12 @@ def get_args_parser():
     parser.add_argument('--eval', action='store_true')
     parser.add_argument('--vis', action='store_true')
     parser.add_argument('--show', action='store_true')
-    parser.add_argument('--num_workers', default=2, type=int)
+    parser.add_argument('--num_workers', default=1, type=int)
     parser.add_argument('--pretrained', default=None, help='resume from checkpoint')
     parser.add_argument('--cache_mode', default=False, action='store_true', help='whether to cache images on memory')
 
     # end-to-end mot settings.
-    parser.add_argument('--mot_path', default='/share/wuweijia/Data/MOT', type=str)
+    parser.add_argument('--mot_path', default='/data/cmpe258-sp24/jingshu/Data/Dataset', type=str)
     parser.add_argument('--data_txt_path_train',
                         default='./datasets/data_path/detmot17.train', type=str,
                         help="path to dataset txt split")

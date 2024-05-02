@@ -1,8 +1,10 @@
 // Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 #include <ATen/ATen.h>
 #include <ATen/cuda/CUDAContext.h>
+#include <ATen/ceil_div.h>
+#include <iostream>
 
-#include <THC/THC.h>
+// #include <THC/THC.h>
 #include <THC/THCAtomics.cuh>
 #include <THC/THCDeviceUtils.cuh>
 
@@ -298,18 +300,24 @@ at::Tensor ROIAlignRotated_forward_cuda(const at::Tensor& input,
   auto output_size = num_rois * pooled_height * pooled_width * channels;
   cudaStream_t stream = at::cuda::getCurrentCUDAStream();
 
-  dim3 grid(std::min(THCCeilDiv((long)output_size, 512L), 4096L));
+  // dim3 grid(std::min(THCCeilDiv((long)output_size, 512L), 4096L));
+  dim3 grid(std::min(at::ceil_div((long)output_size, 512L), 4096L));
   dim3 block(512);
 
   if (output.numel() == 0) {
-    THCudaCheck(cudaGetLastError());
+    // THCudaCheck(cudaGetLastError());
+    cudaError_t error = cudaGetLastError();
+    if (error != cudaSuccess) {
+        // Handle the error, for example, by throwing an exception or logging the error
+        std::cerr << "CUDA error: " << cudaGetErrorString(error) << std::endl;
+    }
     return output;
   }
 
   AT_DISPATCH_FLOATING_TYPES(input.type(), "ROIAlignRotated_forward", [&] {
     RoIAlignRotatedForward<scalar_t><<<grid, block, 0, stream>>>(
          output_size,
-         input.contiguous().data<scalar_t>(),
+         input.contiguous().data_ptr<scalar_t>(),
          spatial_scale,
          channels,
          height,
@@ -317,10 +325,15 @@ at::Tensor ROIAlignRotated_forward_cuda(const at::Tensor& input,
          pooled_height,
          pooled_width,
          sampling_ratio,
-         rois.contiguous().data<scalar_t>(),
-         output.data<scalar_t>());
+         rois.contiguous().data_ptr<scalar_t>(),
+         output.data_ptr<scalar_t>());
   });
-  THCudaCheck(cudaGetLastError());
+  // THCudaCheck(cudaGetLastError());
+  cudaError_t error = cudaGetLastError();
+  if (error != cudaSuccess) {
+      // Handle the error, for example, by throwing an exception or logging the error
+      std::cerr << "CUDA error: " << cudaGetErrorString(error) << std::endl;
+  }
   return output;
 }
 
@@ -343,19 +356,25 @@ at::Tensor ROIAlignRotated_backward_cuda(const at::Tensor& grad,
 
   cudaStream_t stream = at::cuda::getCurrentCUDAStream();
 
-  dim3 grid(std::min(THCCeilDiv((long)grad.numel(), 512L), 4096L));
+  // dim3 grid(std::min(THCCeilDiv((long)grad.numel(), 512L), 4096L));
+  dim3 grid(std::min(at::ceil_div((long)grad.numel(), 512L), 4096L));
   dim3 block(512);
 
   // handle possibly empty gradients
   if (grad.numel() == 0) {
-    THCudaCheck(cudaGetLastError());
+    // THCudaCheck(cudaGetLastError());
+    cudaError_t error = cudaGetLastError();
+    if (error != cudaSuccess) {
+        // Handle the error, for example, by throwing an exception or logging the error
+        std::cerr << "CUDA error: " << cudaGetErrorString(error) << std::endl;
+    }
     return grad_input;
   }
 
   AT_DISPATCH_FLOATING_TYPES(grad.type(), "ROIAlignRotated_backward", [&] {
     RoIAlignRotatedBackwardFeature<scalar_t><<<grid, block, 0, stream>>>(
          grad.numel(),
-         grad.contiguous().data<scalar_t>(),
+         grad.contiguous().data_ptr<scalar_t>(),
          num_rois,
          spatial_scale,
          channels,
@@ -364,9 +383,15 @@ at::Tensor ROIAlignRotated_backward_cuda(const at::Tensor& grad,
          pooled_height,
          pooled_width,
          sampling_ratio,
-         grad_input.data<scalar_t>(),
-         rois.contiguous().data<scalar_t>());
+         grad_input.data_ptr<scalar_t>(),
+         rois.contiguous().data_ptr<scalar_t>());
   });
-  THCudaCheck(cudaGetLastError());
+  // THCudaCheck(cudaGetLastError());
+  cudaError_t error = cudaGetLastError();
+  if (error != cudaSuccess) {
+      // Handle the error, for example, by throwing an exception or logging the error
+      std::cerr << "CUDA error: " << cudaGetErrorString(error) << std::endl;
+  }
+
   return grad_input;
 }

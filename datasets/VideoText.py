@@ -60,6 +60,11 @@ def cv2AddChineseText(image, text, position, textColor=(0, 0, 0), textSize=30):
                     
     return image
 
+def list_from_file(filename):
+    with open(filename, 'r') as file:
+        lines = file.read().splitlines()
+    return lines
+
 def mask_image(image, mask_2d, rgb=None, valid = False):
     h, w = mask_2d.shape
 
@@ -223,7 +228,7 @@ class DetMOTDetection:
             else:
                 labels0 = []
                 words = []
-                lines = mmcv.list_from_file(label_path)
+                lines = list_from_file(label_path)
                 
                 bboxes = []
                 texts = []
@@ -248,7 +253,7 @@ class DetMOTDetection:
                     if 'DSText' in img_path:
                         word = word.lower()
                     
-                    gt_word = np.full((self.max_word_len,), self.char2id['PAD'], dtype=np.int)
+                    gt_word = np.full((self.max_word_len,), self.char2id['PAD'], dtype=np.int32)
                     for j, char in enumerate(word):
                         if j > self.max_word_len - 1:
                             break

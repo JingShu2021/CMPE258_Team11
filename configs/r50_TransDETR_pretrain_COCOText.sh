@@ -9,13 +9,15 @@
 # ------------------------------------------------------------------------
 
 # # pretraining on COCOTextV2
-PRETRAIN=exps/e2e_TransVTS_r50_Synthetic_Chinese_OCR/checkpoint.pth
+PRETRAIN=/data/cmpe258-sp24/jingshu/Data/pretrained_path/pretrain_COCOText_checkpoint.pth
 # PRETRAIN=exps/e2e_TransVTS_r50_COCOTextV2/checkpoint.pth
 # PRETRAIN=exps/e2e_TransVTS_r50_SynthText/checkpointMOTA17.3IDF142.9.pth
 # EXP_DIR=exps/e2e_TransVTS_r50_COCOTextV2
-EXP_DIR=exps/e2e_TransDETR_r50_COCOTextV2
-CUDA_VISIBLE_DEVICES=1,3,4,5,6 python3 -m torch.distributed.launch --nproc_per_node=5 \
-    --use_env main.py \
+EXP_DIR=/data/cmpe258-sp24/jingshu/exps/e2e_TransDETR_r50_COCOTextV2
+# CUDA_VISIBLE_DEVICES=0 python3 -m torch.distributed.launch --nproc_per_node=1 \
+    # --use_env main.py \
+CUDA_VISIBLE_DEVICES=0 
+python3 main.py \
     --meta_arch TransDETR_ignored \
     --dataset_file VideoText \
     --epochs 100 \
@@ -37,8 +39,8 @@ CUDA_VISIBLE_DEVICES=1,3,4,5,6 python3 -m torch.distributed.launch --nproc_per_n
     --fp_ratio 0.3 \
     --query_interaction_layer 'QIM' \
     --extra_track_attn \
-    --mot_path /share/wuweijia/Data/VideoText/MOTR\
-    --data_txt_path_train ./datasets/data_path/SynthText_COCOText.train \
-    --data_txt_path_val ./datasets/data_path/SynthText_COCOText.train \
+    --mot_path /data/cmpe258-sp24/jingshu/Data/Dataset\
+    --data_txt_path_train ./tools/gen_labels/datasets/data_path/COCOTextV2.train \
+    --data_txt_path_val ./tools/gen_labels/datasets/data_path/COCOTextV2.train \
     --pretrained ${PRETRAIN} 
     

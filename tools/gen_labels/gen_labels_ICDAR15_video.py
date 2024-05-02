@@ -1,7 +1,7 @@
 import os.path as osp
 import os
 import numpy as np
-from util.utils import write_result_as_txt,debug, setup_logger,write_lines,MyEncoder
+# from util.utils import write_result_as_txt,debug, setup_logger,write_lines,MyEncoder
 try:
     import xml.etree.cElementTree as ET  # 解析xml的c语言版的模块
 except ImportError:
@@ -12,6 +12,50 @@ import numpy as np
 import cv2
 import math
 from tqdm import tqdm
+
+def get_absolute_path(p):
+    if p.startswith('~'):
+        p = os.path.expanduser(p)
+    return os.path.abspath(p)
+
+def write_lines(p, lines):
+    p = get_absolute_path(p)
+    make_parent_dir(p)
+    with open(p, 'w') as f:
+        for line in lines:
+            f.write(line)
+
+def make_parent_dir(path):
+    """make the parent directories for a file."""
+    parent_dir = get_dir(path)
+    mkdir(parent_dir)
+
+def exists(path):
+    path = get_absolute_path(path)
+    return os.path.exists(path)
+
+def mkdir(path):
+    """
+    If the target directory does not exists, it and its parent directories will created.
+    """
+    path = get_absolute_path(path)
+    if not exists(path):
+        os.makedirs(path)
+    return path
+
+def get_dir(path):
+    '''
+    return the directory it belongs to.
+    if path is a directory itself, itself will be return
+    '''
+    path = get_absolute_path(path)
+    if is_dir(path):
+        return path
+    return os.path.split(path)[0]
+
+def is_dir(path):
+    path = get_absolute_path(path)
+    return os.path.isdir(path)
 
 def adjust_box_sort(box):
     start = -1
@@ -200,8 +244,7 @@ def parse_xml(annotation_path,image_path):
     bboxess, IDss, rotatess, wordss,orignial_bboxess = [], [] , [], [], []
     img = cv2.imread(image_path)
     height, width = img.shape[:2]
-
-            
+          
     for idx,child in enumerate(root):
         bboxes, IDs, rotates, words, orignial_bboxes = \
             getBboxesAndLabels_icd13(height, width, child)
@@ -210,6 +253,7 @@ def parse_xml(annotation_path,image_path):
         rotatess.append(rotates)
         wordss.append(words)
         orignial_bboxess.append(orignial_bboxes)
+    
     return bboxess, IDss, rotatess,wordss, orignial_bboxess
 
 def mkdirs(d):
@@ -217,7 +261,7 @@ def mkdirs(d):
         os.makedirs(d)
 
 def gen_data_path(path,split_train_test="train",data_path_str = "./datasets/data_path/ICDAR15.train"):
-    
+
     image_path = os.path.join(path,"images",split_train_test)
     lines = []
     for video_name in os.listdir(image_path):
@@ -233,13 +277,17 @@ def gen_data_path(path,split_train_test="train",data_path_str = "./datasets/data
     write_lines(data_path_str, lines)  
     
 # path of ground truth of ICDAR2015 video
-from_label_root = "./ICDAR2015_video/train/gt"
+# from_label_root = "./ICDAR2015_video/train/gt"
+from_label_root = '/data/cmpe258-sp24/jingshu/Data/ICDAR2015/'
 
 # path of video frames 
-seq_root = './Dataset/ICDAR2015/images/train'
+# seq_root = './Dataset/ICDAR2015/images/train'
+seq_root = '/data/cmpe258-sp24/jingshu/Data/Dataset/ICDAR2015/images/train'
 
 # path to generate the annotation
-label_root = './Dataset/ICDAR2015/labels_with_ids/train'
+# label_root = './Dataset/ICDAR2015/labels_with_ids/train'
+label_root = '/data/cmpe258-sp24/jingshu/Data/Dataset/ICDAR2015/labels_with_ids/train'
+
 mkdirs(label_root)
 seqs = [s for s in os.listdir(seq_root)]
 
@@ -262,17 +310,17 @@ for seq in tqdm(seqs):
         frame_path_one = osp.join(image_path_frame,"{}.jpg".format(frame_id))
         img = cv2.imread(frame_path_one)
         seq_height, seq_width = img.shape[:2]
-        
+
         lines = []
-        if IDss[i] == []:
+        # if IDss[i] == []:
+        if IDss[i].size == 0:
             with open(label_fpath, 'w') as f:
                 pass
                 continue
-#                 f.write(label_str)
+#                 f.write(label_str)  
         for bboxes,IDs,rotates,word,orignial_bboxes in zip(bboxess[i],IDss[i],rotatess[i],wordss[i],orignial_bboxess[i]):
             track_id = int(IDs)            
-            x, y, w, h = bboxes
-            
+            x, y, w, h = bboxes      
             if track_id not in ID_list:
                 tid_curr += 1
                 ID_list[track_id] = tid_curr
@@ -287,8 +335,9 @@ for seq in tqdm(seqs):
             label_str = '0 {:d} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.1f} {:.1f} {:.1f} {:.1f} {}\n'.format(
             real_id, x / seq_width, y / seq_height, w / seq_width, h / seq_height,rotates, x1, y1, x1 + w1, y1 + h1, word)
             lines.append(label_str)
-            
+        
         write_lines(label_fpath, lines)     
 
 # to generate data_path .txt
-gen_data_path(path="./Dataset/ICDAR2015")
+# gen_data_path(path="./Dataset/ICDAR2015")
+gen_data_path(path="/data/cmpe258-sp24/jingshu/Data/Dataset/ICDAR2015/")

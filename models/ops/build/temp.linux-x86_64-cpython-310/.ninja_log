@@ -1,0 +1,5 @@
+# ninja log v5
+1	26664	1712599571024744892	/home/015941146/GroupProject/TransDETR/models/ops/build/temp.linux-x86_64-cpython-310/home/015941146/GroupProject/TransDETR/models/ops/src/cpu/ms_deform_attn_cpu.o	f1629e98a790ef7e
+3	51516	1712599595849750457	/home/015941146/GroupProject/TransDETR/models/ops/build/temp.linux-x86_64-cpython-310/home/015941146/GroupProject/TransDETR/models/ops/src/vision.o	aad02592498c2551
+1	56915	1712599601307751679	/home/015941146/GroupProject/TransDETR/models/ops/build/temp.linux-x86_64-cpython-310/home/015941146/GroupProject/TransDETR/models/ops/src/cuda/ms_deform_attn_cuda.o	f2fb4bf1385d0747
+279	28866	1712601013057977298	/home/015941146/GroupProject/TransDETR/models/ops/build/temp.linux-x86_64-cpython-310/home/015941146/GroupProject/TransDETR/models/ops/src/cuda/ms_deform_attn_cuda.o	f2fb4bf1385d0747

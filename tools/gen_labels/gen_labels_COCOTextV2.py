@@ -2,7 +2,7 @@ import os.path as osp
 import os
 import numpy as np
 import json
-from util.utils import write_result_as_txt,debug, setup_logger,write_lines,MyEncoder
+# from util.utils import write_result_as_txt,debug, setup_logger,write_lines,MyEncoder
 try:
     import xml.etree.cElementTree as ET  # 解析xml的c语言版的模块
 except ImportError:
@@ -13,6 +13,50 @@ import numpy as np
 import cv2
 import math
 from tqdm import tqdm
+
+def get_absolute_path(p):
+    if p.startswith('~'):
+        p = os.path.expanduser(p)
+    return os.path.abspath(p)
+
+def write_lines(p, lines):
+    p = get_absolute_path(p)
+    make_parent_dir(p)
+    with open(p, 'w') as f:
+        for line in lines:
+            f.write(line)
+
+def make_parent_dir(path):
+    """make the parent directories for a file."""
+    parent_dir = get_dir(path)
+    mkdir(parent_dir)
+
+def exists(path):
+    path = get_absolute_path(path)
+    return os.path.exists(path)
+
+def mkdir(path):
+    """
+    If the target directory does not exists, it and its parent directories will created.
+    """
+    path = get_absolute_path(path)
+    if not exists(path):
+        os.makedirs(path)
+    return path
+
+def get_dir(path):
+    '''
+    return the directory it belongs to.
+    if path is a directory itself, itself will be return
+    '''
+    path = get_absolute_path(path)
+    if is_dir(path):
+        return path
+    return os.path.split(path)[0]
+
+def is_dir(path):
+    path = get_absolute_path(path)
+    return os.path.isdir(path)
 
 def adjust_box_sort(box):
     start = -1
@@ -136,104 +180,106 @@ def mkdirs(d):
 def gen_data_path(path,split_train_test="train",data_path_str = "./datasets/data_path/COCOTextV2.train"):
     
     image_path = os.path.join(path,"images",split_train_test)
+    print("Image Path: ",image_path)
     lines = []
+    frame_list = []
     for video_name in os.listdir(image_path):
-        frame_path = os.path.join(image_path,video_name)
-        frame_list = []
-        for frame_path_ in os.listdir(frame_path):
-            if ".jpg" in frame_path_:
-                frame_list.append(frame_path_)
+        # frame_path = os.path.join(image_path,video_name)
+        
+        # for frame_path_ in os.listdir(frame_path):
+        if ".jpg" in video_name:
+            frame_list.append(video_name)
                 
-        for i in frame_list:
-            label_path = '/share/wuweijia/Data/VideoText/MOTR/COCOTextV2/labels_with_ids/train/train_image/' + i.replace("jpg","txt").replace("png","txt")
-            if not os.path.exists(label_path):
-                continue
+    for i in frame_list:
+        label_path = '/data/cmpe258-sp24/jingshu/Data/Dataset/COCOTextV2/labels_with_ids/train/' + i.replace("jpg","txt").replace("png","txt")
+        if not os.path.exists(label_path):
+            continue
 #                 with open(label_path, 'w') as f:
 #                     pass
-                    
-            frame_real_path = "COCOTextV2/images/train/" + video_name + "/{}".format(i) + "\n"
-            lines.append(frame_real_path)
+                
+        frame_real_path = "COCOTextV2/images/train/" + "{}".format(i) + "\n"
+        lines.append(frame_real_path)
     write_lines(data_path_str, lines)  
     
 
-from_label_root = "/share/wuweijia/Data/COCOTextV2"
-seq_root = '/share/wuweijia/Data/VideoText/MOTR/COCOTextV2/images/train'
-label_root = '/share/wuweijia/Data/VideoText/MOTR/COCOTextV2/labels_with_ids/train'
+from_label_root = "/data/cmpe258-sp24/jingshu/Data/Dataset/COCOTextV2"
+seq_root = '/data/cmpe258-sp24/jingshu/Data/Dataset/COCOTextV2/images/train'
+label_root = '/data/cmpe258-sp24/jingshu/Data/Dataset/COCOTextV2/labels_with_ids/train'
 mkdirs(label_root)
 seqs = [s for s in os.listdir(seq_root)]
-
+print("seqs len: ",len(seqs))
 
 
 tid_curr = 0
 tid_last = -1
-for seq in seqs:
-    image_path_frame = osp.join(seq_root,seq)
-    seq_label_root = osp.join(label_root, seq)
-    mkdirs(seq_label_root)
+# for seq in seqs:
+# image_path_frame = osp.join(seq_root,seq)
+# seq_label_root = osp.join(label_root, seq)
+seq_label_root = label_root
+# mkdirs(seq_label_root)
+
+ann_path = os.path.join(from_label_root, "cocotext.json")
+with open(ann_path,'r',encoding='utf-8-sig') as load_f:
+    gt = json.load(load_f)
     
-    ann_path = os.path.join(from_label_root, "cocotext.json")
-    with open(ann_path,'r',encoding='utf-8-sig') as load_f:
-        gt = json.load(load_f)
-     
-    annns = {}
-    for a in gt["anns"]:
-        one_anns = gt["anns"][a]
-        if one_anns["image_id"] not in annns:
-            annns[one_anns["image_id"]] = [one_anns]
-        else:
-            annns[one_anns["image_id"]].append(one_anns)
-    
-    for idx,a in tqdm(enumerate(gt["imgs"])):
-        one_imgs = gt["imgs"][a]
+annns = {}
+for a in gt["anns"]:
+    one_anns = gt["anns"][a]
+    if one_anns["image_id"] not in annns:
+        annns[one_anns["image_id"]] = [one_anns]
+    else:
+        annns[one_anns["image_id"]].append(one_anns)
+
+for idx,a in tqdm(enumerate(gt["imgs"])):
+    one_imgs = gt["imgs"][a]
 
 #         one_imgs_path = os.path.join(image_path_frame,one_imgs)
 #         img = cv2.imread(one_imgs_path)
 #         seq_height, seq_width = img.shape[:2]
-        seq_height, seq_width = one_imgs["height"], one_imgs["width"]
-    
-        label_fpath = osp.join(seq_label_root, one_imgs["file_name"].replace("jpg","txt").replace("png","txt"))
-                
-        lines = []
-        
-        try:
-            boxs = annns[int(a)]
-        except:
-            continue
+    seq_height, seq_width = one_imgs["height"], one_imgs["width"]
 
-                    
-        for box in boxs:
-            tid_curr += 1
-            
-            box_ = box["bbox"]
-            if box["legibility"] == "illegible":
-                trans = "###"
-            else:
-                trans = box["utf8_string"]
+    label_fpath = osp.join(seq_label_root, one_imgs["file_name"].replace("jpg","txt").replace("png","txt"))
+    lines = []
+    
+    try:
+        boxs = annns[int(a)]
+    except:
+        continue
+
+                
+    for box in boxs:
+        tid_curr += 1
+        
+        box_ = box["bbox"]
+        if box["legibility"] == "illegible":
+            trans = "###"
+        else:
+            trans = box["utf8_string"]
 #             print(box)
 #             assert False
 #             print(trans)
-            points = np.array([int(i) for i in np.array(box["mask"])])
-            try:
-                x1, y1, w1, h1 = cv2.boundingRect(points.reshape((int(len(points)/2), 2)))
-                points = cv2.minAreaRect(points.reshape((int(len(points)/2), 2)))
-            except:
-                print(points)
-                print(int(len(points)/2))
-                assert False
-                
-            # 获取矩形四个顶点，浮点型
-            points = cv2.boxPoints(points).reshape((-1))
-            box, rotate = get_rotate(points)
-            x, y, w, h = box
+        points = np.array([int(i) for i in np.array(box["mask"])])
+        try:
+            x1, y1, w1, h1 = cv2.boundingRect(points.reshape((int(len(points)/2), 2)))
+            points = cv2.minAreaRect(points.reshape((int(len(points)/2), 2)))
+        except:
+            print(points)
+            print(int(len(points)/2))
+            assert False
             
+        # 获取矩形四个顶点，浮点型
+        points = cv2.boxPoints(points).reshape((-1))
+        box, rotate = get_rotate(points)
+        x, y, w, h = box
         
-            x += w / 2
-            y += h / 2
-            label_str = '0 {:d} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.1f} {:.1f} {:.1f} {:.1f} {}\n'.format(
-            tid_curr, x / seq_width, y / seq_height, w / seq_width, h / seq_height, rotate, x1, y1, x1 + w1, y1 + h1, trans)
-            lines.append(label_str)
-            
-        write_lines(label_fpath, lines)    
+    
+        x += w / 2
+        y += h / 2
+        label_str = '0 {:d} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.1f} {:.1f} {:.1f} {:.1f} {}\n'.format(
+        tid_curr, x / seq_width, y / seq_height, w / seq_width, h / seq_height, rotate, x1, y1, x1 + w1, y1 + h1, trans)
+        lines.append(label_str)
+        
+    write_lines(label_fpath, lines)    
             
     
-# gen_data_path(path="/share/wuweijia/Data/VideoText/MOTR/COCOTextV2")
+gen_data_path(path="/data/cmpe258-sp24/jingshu/Data/Dataset/COCOTextV2")

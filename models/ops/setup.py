@@ -19,7 +19,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 requirements = ["torch", "torchvision"]
-
+# os.environ['CUDA_HOME']='/usr/local/cuda/'
 def get_extensions():
     this_dir = os.path.dirname(os.path.abspath(__file__))
     extensions_dir = os.path.join(this_dir, "src")
@@ -33,6 +33,9 @@ def get_extensions():
     extra_compile_args = {"cxx": []}
     define_macros = []
 
+    print("check cuda availability...")
+    print(torch.cuda.is_available())
+    print(os.environ['CUDA_HOME'])
     if torch.cuda.is_available() and CUDA_HOME is not None:
         extension = CUDAExtension
         sources += source_cuda

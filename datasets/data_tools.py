@@ -17,7 +17,7 @@ import math
 # import scipy.io as scio
 import json
 import pyclipper
-import Polygon as plg
+import polygon as plg
 
 
 def get_img(img_path, read_type='cv2'):

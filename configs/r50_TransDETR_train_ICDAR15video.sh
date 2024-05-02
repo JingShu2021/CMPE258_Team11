@@ -17,7 +17,7 @@
 PRETRAIN=exps/e2e_TransVTS_r50_COCOTextV2_SynthText/checkpoint.pth
 # PRETRAIN=exps/e2e_TransVTS_r50_SynthText/checkpointMOTA17.3IDF142.9.pth
 
-EXP_DIR=exps/e2e_TransVTS_r50_ICDAR15
+EXP_DIR=/data/cmpe258-sp24/jingshu/exps/e2e_TransVTS_r50_ICDAR15
 
 CUDA_VISIBLE_DEVICES=1,3,4,5,6 python3 -m torch.distributed.launch --nproc_per_node=5 \
     --use_env main.py \
@@ -42,7 +42,7 @@ CUDA_VISIBLE_DEVICES=1,3,4,5,6 python3 -m torch.distributed.launch --nproc_per_n
     --fp_ratio 0.3 \
     --query_interaction_layer 'QIM' \
     --extra_track_attn \
-    --mot_path /share/wuweijia/Data/VideoText/MOTR\
+    --mot_path /data/cmpe258-sp24/jingshu/Data/Dataset\
     --data_txt_path_train ./datasets/data_path/ICDAR15.train \
     --data_txt_path_val ./datasets/data_path/ICDAR15.train \
     --pretrained ${PRETRAIN} 

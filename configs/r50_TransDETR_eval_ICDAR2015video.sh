@@ -5,7 +5,7 @@
 # Copyright (c) 2020 SenseTime. All Rights Reserved.
 # ------------------------------------------------------------------------
 
-EXP_DIR=exps/e2e_TransVTS_r50_ICDAR15
+EXP_DIR=/data/cmpe258-sp24/jingshu/exps/e2e_TransVTS_r50_ICDAR15
 # EXP_DIR=exps/e2e_TransVTS_r50_VideoSynthText
 # EXP_DIR=exps/e2e_TransVTS_r50_FlowImage
 # EXP_DIR=exps/e2e_TransVTS_r50_UnrealText
@@ -38,12 +38,12 @@ CUDA_VISIBLE_DEVICES=0 python3 parallel_eval_icdar15.py \
     --fp_ratio 0.3 \
     --query_interaction_layer 'QIM' \
     --extra_track_attn \
-    --mot_path /mmu-ocr/weijiawu/Data/VideoText/MOTR\
+    --mot_path /data/cmpe258-sp24/jingshu/Data/Dataset\
     --data_txt_path_train ./datasets/data_path/ICDAR15.train \
     --data_txt_path_val ./datasets/data_path/ICDAR15.train \
-    --resume ${EXP_DIR}/TextSpottingMOTA60.9IDF172.8.pth
+    # --resume ${EXP_DIR}/TextSpottingMOTA60.9IDF172.8.pth
 #     --resume exps/e2e_TransVTS_r50_ICDAR15/checkpoint.pth
-    #--resume ${EXP_DIR}/checkpoint.pth
+    --resume ${EXP_DIR}/checkpoint.pth
 #     \
 #     --show
     
