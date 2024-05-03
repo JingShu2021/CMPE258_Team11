@@ -359,7 +359,7 @@ class DetMOTDetection:
         targets['iscrowd'] = torch.as_tensor(targets['iscrowd'])
         targets['labels'] = torch.as_tensor(targets['labels'], dtype=torch.int64)
         targets['obj_ids'] = torch.as_tensor(targets['obj_ids'])
-        targets['word'] = torch.as_tensor(targets['word'], dtype=torch.long)
+        targets['word'] = torch.as_tensor(np.array(targets['word']), dtype=torch.long)
         targets['texts_ignored'] = torch.as_tensor(targets['texts_ignored'], dtype=torch.long)
         targets['rotate'] = torch.as_tensor(targets['rotate'], dtype=torch.float32)
         targets['boxes'] = torch.as_tensor(targets['boxes'], dtype=torch.float32).reshape(-1, 4)

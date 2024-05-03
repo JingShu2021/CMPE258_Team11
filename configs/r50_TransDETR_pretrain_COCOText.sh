@@ -20,7 +20,7 @@ CUDA_VISIBLE_DEVICES=0
 python3 main.py \
     --meta_arch TransDETR_ignored \
     --dataset_file VideoText \
-    --epochs 100 \
+    --epochs 10 \
     --with_box_refine \
     --lr_drop 30 \
     --lr 2e-4 \
