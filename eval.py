@@ -26,6 +26,9 @@ from __future__ import print_function
 from PIL import Image, ImageDraw, ImageFont
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+import sys
+sys.path.append('/home/015941146/GroupProject/TransDETR/src/detectron2/detectron2/structures/')
+
 import numpy as np
 import random
 import argparse
@@ -45,7 +48,8 @@ from util.evaluation import Evaluator
 import motmetrics as mm
 import shutil
 import math
-from detectron2.structures import Instances
+# from detectron2.structures import Instances
+from src.detectron2.detectron2.structures.instances import Instances
 from xml.dom.minidom import Document
 try:
     import xml.etree.cElementTree as ET  #解析xml的c语言版的模块
@@ -344,6 +348,7 @@ class MOTR(object):
 
 
 def load_label(label_path: str, img_size: tuple) -> dict:
+    print(np.loadtxt(label_path, dtype=np.float32)) 
     labels0 = np.loadtxt(label_path, dtype=np.float32).reshape(-1, 6)
     h, w = img_size
     # Normalized cewh to pixel xyxy format
@@ -889,7 +894,7 @@ if __name__ == '__main__':
     
     
     if "ICDAR15" in args.data_txt_path_val:
-        args.mot_path = os.path.join(args.mot_path,"ICDAR2015/images/test")
+        args.mot_path = os.path.join(args.mot_path,"ICDAR2015/images/test2")#"ICDAR2015/images/test"
         seq_nums = os.listdir(args.mot_path)
 #         args.mot_path = "/mmu-ocr/yuzhong/code/VideoSynthtext/SynthText/gen_data/synthtextvid_709"
 #         seq_nums = ["VirtualPropertyTour_EstateAgentFPVDrone-Kb7vdBdCeu0_00170_00180_84_134_0"]
@@ -930,7 +935,7 @@ if __name__ == '__main__':
     "memory_embed_time" : 0,
      "postprocess_time": 0 
     }
-    
+    print("Seq_nums: ",seq_nums)
     number_frame = 0
     for seq_num in seq_nums:
 #         if seq_num not in ICDAR2013_seqs and "ICDAR15" in args.data_txt_path_val:

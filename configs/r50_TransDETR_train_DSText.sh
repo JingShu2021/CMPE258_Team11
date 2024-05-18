@@ -14,16 +14,18 @@
 # PRETRAIN=exps/e2e_TransVTS_r50_FlowTextV2/checkpoint.pth
 # PRETRAIN=exps/e2e_TransVTS_r50_VISD/checkpointMOTA0.214IDF144.7.pth
 # PRETRAIN=exps/e2e_TransVTS_r50_UnrealText/checkpoint.pth
-PRETRAIN=exps/e2e_TransVTS_r50_COCOTextV2_SynthText/checkpoint.pth
+# PRETRAIN=exps/e2e_TransVTS_r50_COCOTextV2_SynthText/checkpoint.pth
 # PRETRAIN=exps/e2e_TransVTS_r50_SynthText/checkpointMOTA17.3IDF142.9.pth
 
-EXP_DIR=exps/e2e_TransDETR_r50_DSText
+PRETRAIN=/data/cmpe258-sp24/jingshu/exps/e2e_TransDETR_r50_COCOTextV2/checkpoint.pth
 
-CUDA_VISIBLE_DEVICES=0 python3 -m torch.distributed.launch --nproc_per_node=1 \
-    --use_env main.py \
+EXP_DIR=/data/cmpe258-sp24/jingshu/exps/e2e_TransDETR_r50_DSText
+
+CUDA_VISIBLE_DEVICES=0 
+python main.py \
     --meta_arch TransDETR_ignored \
     --dataset_file VideoText \
-    --epochs 50 \
+    --epochs 10 \
     --with_box_refine \
     --lr_drop 5 \
     --lr 2e-4 \
@@ -33,7 +35,7 @@ CUDA_VISIBLE_DEVICES=0 python3 -m torch.distributed.launch --nproc_per_node=1 \
     --sample_mode 'random_interval' \
     --sample_interval 3 \
     --sampler_steps 1 2 \
-    --sampler_lengths 8 8 8 \
+    --sampler_lengths 3 3 3 \
     --update_query_pos \
     --rec\
     --merger_dropout 0 \
@@ -44,7 +46,6 @@ CUDA_VISIBLE_DEVICES=0 python3 -m torch.distributed.launch --nproc_per_node=1 \
     --query_interaction_layer 'QIM' \
     --extra_track_attn \
     --mot_path /data/cmpe258-sp24/jingshu/Data/Dataset\
-    --data_txt_path_train ./datasets/data_path/DSText.train \
-    --data_txt_path_val ./datasets/data_path/DSText.train 
-#     \
-#     --pretrained ${PRETRAIN} 
+    --data_txt_path_train ./tools/gen_labels/datasets/data_path/DSText.train \
+    --data_txt_path_val ./tools/gen_labels/datasets/data_path/DSText.train \
+    --pretrained ${PRETRAIN} 

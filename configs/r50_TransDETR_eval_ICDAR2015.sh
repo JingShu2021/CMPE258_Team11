@@ -5,18 +5,19 @@
 # Copyright (c) 2020 SenseTime. All Rights Reserved.
 # ------------------------------------------------------------------------
 
-EXP_DIR=exps/e2e_TransVTS_r50_ICDAR15
+# EXP_DIR=exps/e2e_TransVTS_r50_ICDAR15
+EXP_DIR=/data/cmpe258-sp24/jingshu/exps/e2e_TransVTS_r50_ICDAR15_eval
 # EXP_DIR=exps/e2e_TransVTS_r50_SynthText
 # EXP_DIR=exps/e2e_TransVTS_r50_COCOTextV2
 python3 eval.py \
     --meta_arch TransDETR_ignored \
     --dataset_file Text \
-    --epoch 200 \
+    --epoch 10 \
     --with_box_refine \
     --lr_drop 100 \
     --lr 2e-4 \
     --lr_backbone 2e-5 \
-    --pretrained ${EXP_DIR}/motr_final.pth \
+    --pretrained ${EXP_DIR}/checkpoint.pth \
     --output_dir ${EXP_DIR} \
     --batch_size 1 \
     --sample_mode 'random_interval' \
@@ -30,12 +31,11 @@ python3 eval.py \
     --fp_ratio 0.3 \
     --query_interaction_layer 'QIM' \
     --extra_track_attn \
-    --mot_path /share/wuweijia/Data/VideoText/MOTR\
-    --data_txt_path_train ./datasets/data_path/ICDAR15.train \
-    --data_txt_path_val ./datasets/data_path/ICDAR15.train \
-    --resume ${EXP_DIR}/checkpoint0048.pth
-#     \
-#     --show
+    --mot_path /data/cmpe258-sp24/jingshu/Data/Dataset\
+    --data_txt_path_train ./tools/gen_labels/datasets/data_path/ICDAR15.train \
+    --data_txt_path_val ./tools/gen_labels/datasets/data_path/ICDAR15_eval.train \
+    --resume ${EXP_DIR}/checkpoint.pth \
+    --show
     
 
 
