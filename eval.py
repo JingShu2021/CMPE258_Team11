@@ -883,7 +883,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.output_dir:
         Path(args.output_dir).mkdir(parents=True, exist_ok=True)
-
+    print('args:', args)
     # load model and weights
     detr, _, _ = build_model(args)
     checkpoint = torch.load(args.resume, map_location='cpu')
@@ -894,7 +894,7 @@ if __name__ == '__main__':
     
     
     if "ICDAR15" in args.data_txt_path_val:
-        args.mot_path = os.path.join(args.mot_path,"ICDAR2015/images/test2")#"ICDAR2015/images/test"
+        args.mot_path = os.path.join(args.mot_path,"ICDAR2015/images/test")
         seq_nums = os.listdir(args.mot_path)
 #         args.mot_path = "/mmu-ocr/yuzhong/code/VideoSynthtext/SynthText/gen_data/synthtextvid_709"
 #         seq_nums = ["VirtualPropertyTour_EstateAgentFPVDrone-Kb7vdBdCeu0_00170_00180_84_134_0"]

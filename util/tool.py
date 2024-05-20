@@ -17,8 +17,11 @@ def load_model(model, model_path, optimizer=None, resume=False,
     start_epoch = 0
     checkpoint = torch.load(model_path, map_location=lambda storage, loc: storage)
     print(f'loaded {model_path}')
+    print(checkpoint.keys())
     state_dict = checkpoint['model']
+    print("Pre-trained model length: ", len(state_dict.keys()))
     model_state_dict = model.state_dict()
+    print("new model length: ", len(model_state_dict.keys()))
 
     # check loaded parameters and created model parameters
     msg = 'If you see this, your model does not fully load the ' + \

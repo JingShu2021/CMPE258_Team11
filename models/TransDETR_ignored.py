@@ -656,9 +656,9 @@ class TransDETR(nn.Module):
     def _generate_empty_tracks(self):
         track_instances = Instances((1, 1))
         num_queries, dim = self.query_embed.weight.shape  # (300, 512)
-        print("**** query_embed.weight.shape ****")
-        print("num_queries: ", num_queries)
-        print("dim: ", dim)
+        # print("**** query_embed.weight.shape ****")
+        # print("num_queries: ", num_queries)
+        # print("dim: ", dim)
         device = self.query_embed.weight.device
         track_instances.ref_pts = self.transformer.reference_points(self.query_embed.weight[:, :dim // 2])
         track_instances.query_pos = self.query_embed.weight
@@ -997,7 +997,7 @@ def build(args):
     assert args.dataset_file in dataset_to_num_classes
     num_classes = dataset_to_num_classes[args.dataset_file]
     device = torch.device(args.device)
-
+    print("num of classes:", num_classes)
     backbone = build_backbone(args)
 
     transformer = build_deforamble_transformer(args)

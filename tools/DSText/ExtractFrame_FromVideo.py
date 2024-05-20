@@ -45,7 +45,7 @@ def extract_frame_from_video(video_path, video_frame_save_dir ):
         cv2.imwrite( os.path.join(video_frame_save_dir, frame_name), frame )
         frame_index += 1
 
-def batch_extractFrame_fromVideo(VideoSet_dir="",to_video=""):
+def batch_Video(VideoSet_dir="",to_video=""):
     '''
     :return: 
     '''
@@ -74,7 +74,7 @@ def batch_extractFrame_fromVideo(VideoSet_dir="",to_video=""):
                 
         
 if __name__ == "__main__":
-    print ("Hello World!")
+    print ("Start extracting frames ...")
     VideoSetDir_list = []
     
     video_root = "/data/cmpe258-sp24/jingshu/Data/Dataset/DSText/DSText_video"#"./video/"
@@ -89,5 +89,5 @@ if __name__ == "__main__":
     for VideoSet_dir in VideoSetDir_list:
         print(VideoSet_dir)
         to_video = os.path.join(output_frame_root,VideoSet_dir.split("/")[-1])
-        batch_extractFrame_fromVideo(VideoSet_dir,to_video)
-
+        # batch_extractFrame_fromVideo(VideoSet_dir,to_video)
+        batch_Video(VideoSet_dir,to_video)
