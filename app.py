@@ -26,7 +26,6 @@ def serve_video(filename):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    print("receiving request ${request.method} from the client...")
     if request.method == 'POST':
         # save the upload video in a folder
         video_file = request.files['video']
@@ -44,9 +43,9 @@ def index():
         
         # Process video
         # step 1: extract frames from the video
-        # extract_frame_from_video(video_path,frames_dir)
+        extract_frame_from_video(video_path,frames_dir)
         # step 2: annotated frames through inference
-        # annotate_frames(args, EXTRACTED_FRAME_FOLDER)
+        annotate_frames(args, EXTRACTED_FRAME_FOLDER)
         # step 3: generated video from annotated frames
         generate_output_video(PROCESSED_FOLDER)
 
