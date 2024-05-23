@@ -10,8 +10,61 @@ Group Members:
 
 ## Installation
 The codebases are built on top of [TransDETR](https://github.com/weijiawu/TransDETR/tree/main), [Deformable DETR](https://github.com/fundamentalvision/Deformable-DETR) and [MOTR](https://github.com/megvii-model/MOTR).
+- Linux, CUDA>= 9.2, GCC>=5.4, Python>=3.7
+- Use Anaconda to create a conda environment:
+```
+conda create -n TransDETR2 python=3.9 pip
+conda activate TransDETR
+conda install pytorch=1.6.0 torchvision=0.6.1
+conda install -c conda-forge cudatoolkit=11.8.0
+```
+- Other requirements
+```
+pip install -r requirements.txt
+```
+- Build MultiScaleDeformableAttention and Rotated ROIAlign
+```
+cd ./models/ops
+sh ./make.sh
 
-
+cd ./models/Rotated_ROIAlign
+python setup.py build_ext --inplace
+```
+## Usage
+### Dataset preparation
+- Download the dataset: [COCOTextV2](https://bgshih.github.io/cocotext/ ), [ICDAR 2015](https://rrc.cvc.uab.es/?ch=3&com=evaluation&task=4), [DSText](https://rrc.cvc.uab.es/?ch=22&com=downloads)
+- Extract frames from videos: run ExtractFrame_FromVideo.py to extract frames and organize the extracted images in a folder structure below:
+  ![Pasted Graphic 4](https://github.com/JingShu2021/CMPE258_Team11/assets/98684620/01027e07-b1d0-454b-a49b-062445ae8132)
+- Generated labels for images:
+  - COCOTextV2: run gen_labels_COCOTextV2.py
+  - ICDAR 2015: run gen_labels_ICDAR15_video.py
+  - DSText: run gen_labels_DSText.py
+### Training and evaluation
+- Download COCOTextV2 pre-trained weights for Pretrained [TransDETR](https://drive.google.com/file/d/1PvOvBVpJLewN5uMnSeiJddmDGh3rKcyv/view), then as following:
+```
+sh configs/r50_TransDETR_pretrain_COCOText.sh
+```
+- Train on ICDAR2015 as follows:
+```
+sh configs/r50_TransDETR_train_ICDAR15video.sh
+```
+- Train on DSText as follows:
+```
+sh configs/r50_TransDETR_train_DSText.sh
+```
+- Evaluate on IDCAR2015
+```
+sh configs/r50_TransDETR_eval_ICDAR2015.sh
+```
+### Inference
+```
+python inference.py
+```
+### End-to-End Application
+Install flask (pip install flask).
+```
+python app.py
+```
 ## Citing
 
 This code uses codes from TransDETR, MOTR, TransVTSpotter and EAST. Many thanks to their wonderful work:
