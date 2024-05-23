@@ -34,11 +34,23 @@ python setup.py build_ext --inplace
 ### Dataset preparation
 - Download the dataset: [COCOTextV2](https://bgshih.github.io/cocotext/ ), [ICDAR 2015](https://rrc.cvc.uab.es/?ch=3&com=evaluation&task=4), [DSText](https://rrc.cvc.uab.es/?ch=22&com=downloads)
 - Extract frames from videos: run ExtractFrame_FromVideo.py to extract frames and organize the extracted images in a folder structure below:
+  
   ![Pasted Graphic 4](https://github.com/JingShu2021/CMPE258_Team11/assets/98684620/01027e07-b1d0-454b-a49b-062445ae8132)
+  
 - Generated labels for images:
-  - COCOTextV2: run gen_labels_COCOTextV2.py
-  - ICDAR 2015: run gen_labels_ICDAR15_video.py
-  - DSText: run gen_labels_DSText.py
+  - COCOTextV2:
+```
+python gen_labels_COCOTextV2.py
+```
+  - ICDAR 2015:
+```
+python gen_labels_ICDAR15_video.py
+```
+  - DSText:
+```
+python gen_labels_DSText.py
+```
+
 ### Training and evaluation
 - Download COCOTextV2 pre-trained weights for Pretrained [TransDETR](https://drive.google.com/file/d/1PvOvBVpJLewN5uMnSeiJddmDGh3rKcyv/view), then as following:
 ```
